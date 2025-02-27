@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Save as ZIP</title>
+	<meta name="viewport" content="initial-scale=1, minimum-scale=1, maximum-scale=1, width=device-width" />
+
+	<style>
+		body {
+			font-family: sans-serif;
+			padding: 2rem;
+			margin: 0;
+		}
+        
+		* {
+			box-sizing: border-box;
+		}
+	</style>
+
+    <script type="module">
+
+        import 'https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js';
+        import 'https://cdn.jsdelivr.net/npm/file-saver@2.0.5/src/FileSaver.js';
+
+        class SaveAsZip {
+            constructor (cfg) {
+                this.cfg = cfg;
+            }
+
+            async download (urls) {
+
+                const zip = new JSZip();
+
+                for (let url of urls) {
+
+                    let request = new Request(url);
+                    let response = await fetch(request);
+                    let blob = await response.blob();
+                    zip.file(url.split('/').pop(), blob);
+
+                }
+
+                const content = await zip.generateAsync({ type: 'blob' });
+                saveAs(content, 'download.zip');
+            }
+        }
+
+        window.saveAsZip = new SaveAsZip({})
+
+    </script>
+</head>
+
+<body>
+
+    <h1>Download the following files as a zip:</h1>
+
+    <ul>
+        <li>21kb_classic_displayed.jpg</li>
+        <li>crp_windgod_displayed.jpg</li>
+        <li>dcs_9009_displayed.jpg</li>
+        <li>dcs_midnight_displayed.jpg</li>
+        <li>sample.pdf</li>
+    </ul>
+
+    <p>
+        <button onclick="window.saveAsZip.download(['21kb_classic_displayed.jpg', 'crp_windgod_displayed.jpg', 'dcs_9009_displayed.jpg', 'dcs_midnight_displayed.jpg', 'sample.pdf']); return false;">Save as ZIP</button>
+    </p>
+
+</body>
+
+</html>
